@@ -1,0 +1,68 @@
+<p>
+  DNS Management for:
+  <strong><%= @zone.name %></strong>
+</p>
+
+<%= form_for [@zone, @dns_record] do |form| %>
+  <div class="form-row">
+    <div class="form-group col">
+      <%= form.label :record_type, "Type" %><br />
+      <%= form.select :record_type, DnsRecord.record_types.keys, class: 'form-control' %>
+    </div>
+    <div class="form-group col">
+      <%= form.label :name %><br />
+      <%= form.text_field :name, placeholder: "Use @ for root" %>
+    </div>
+    <div class="form-group col">
+      <%= form.label :value %><br />
+      <%= form.text_field :value %>
+    </div>
+    <div class="form-group col">
+      <%= form.label :ttl, "TTL" %><br />
+      <%= form.select :ttl, [
+        ['2 min', 2 * 60],
+        ['5 min', 5 * 60],
+        ['10m', 10 * 60],
+        ['15m', 15 * 60],
+        ['30m', 30 * 60],
+        ['1h', 1 * 60 * 60],
+        ['2h', 2 * 60 * 60],
+        ['5h', 5 * 60 * 60],
+        ['12h', 12 * 60 * 60],
+        ['1d', 24 * 60 * 60],
+        ], prompt: "Auto" %>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-10">
+        <button class="btn btn-primary">Add</button>
+      </div>
+    </div>
+  </div>
+<%- end %>
+
+<table class="table table-striped">
+  <tr>
+    <th>Type</th>
+    <th>Name</th>
+    <th>Content</th>
+    <th>TTL</th>
+    <th></th>
+  </tr>
+  <%- @zone.dns_records.filter{|a| a.id.present?}.each do |record|%>
+    <tr>
+      <td><%= record.record_type %></td>
+      <td><%= record.name %></td>
+      <td><%= record.value %></td>
+      <td><%= distance_of_time_in_words(record.ttl).sub("about ", "") %></td>
+      <td><%= link_to "X", [@zone, record], method: :delete, data: {confirm: "Are you sure" } %></td>
+    </tr>
+  <%- end %>
+</table>
+
+<pre>
+<%= @zone.dump %>
+</pre>
+<br />
+
+<%= link_to 'Edit', edit_zone_path(@zone) %> |
+<%= link_to 'Back', zones_path %>

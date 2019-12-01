@@ -1,0 +1,2 @@
+module DnsRecordHelper
+end
